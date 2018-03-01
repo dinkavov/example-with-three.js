@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+	     <script src="js/three.min.js"></script>
+		 <script src="js/TrackballControls.js"></script>
+	</head>
+	<body>
+        
+		<script>
+
+		var renderer, camera, scene;
+		var cone_texture, loader, cube, cube_material, cube_geometry, cone;
+		var controls, light;
+		
+		
+		
+var vertices = []; 
+
+		init();
+		animate();
+		function init()
+			{
+				
+
+				camera = new THREE.PerspectiveCamera(50,window.innerWidth / window.innerHeight, 1,10000);
+				camera.position.z=50;
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x6AA3E6 );
+				controls = new THREE.TrackballControls( camera );
+				
+				light = new THREE.DirectionalLight( 0xffffff,1 );
+				light.position.set( 0, 0, 100 ).normalize();
+				scene.add(light);
+				
+
+				var curve = new THREE.CubicBezierCurve3( 
+				  new THREE.Vector3( 15, 10, 0 ),  //P0 
+				  new THREE.Vector3( -50, 30, 0 ),  //P1 
+				  new THREE.Vector3( 30, -45, 0 ),  //P2 
+				  new THREE.Vector3( 10, 0, 0 )    //P3 
+				); 
+
+			
+				//получение 350-ти точек на заданной прямой 
+				vertices = curve.getPoints( 350 ); 
+
+
+				var geometry = new THREE.Geometry(); 
+				geometry.vertices = curve.getPoints( 350 ); 
+				var material = new THREE.LineBasicMaterial( { color : 0xE66AB2 } ); 
+				var curveObject = new THREE.Line( geometry, material ); 
+				scene.add(curveObject); 
+
+
+				geometry=new THREE.CylinderGeometry( 3, 3, 3);
+
+			 
+				var material = [
+
+				new THREE.MeshPhongMaterial({map: THREE.ImageUtils.loadTexture('images/1.jpg'),overdraw:true}),
+
+				new THREE.MeshPhongMaterial({map: THREE.ImageUtils.loadTexture('images/1.jpg'),overdraw:true}),
+
+				new THREE.MeshPhongMaterial({map: THREE.ImageUtils.loadTexture('images/1.jpg'),overdraw:true})
+
+ 				];
+ 				
+
+
+				var meshFaceMaterial = new THREE.MeshFaceMaterial( material );
+				cone=new THREE.Mesh(geometry, meshFaceMaterial);
+
+
+				scene.add(cone);
+
+				renderer = window.WebGLRenderingContext ? new THREE.WebGLRenderer({antialias:true}) : new THREE.CanvasRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+
+			}
+
+function animate() 
+{
+
+	 			cone.rotation.x += 0.01;
+				cone.rotation.y += 0.01;
+    requestAnimationFrame( animate );
+    renderer.render( scene, camera );
+	render();		
+	update();
+}
+
+function position(t)
+{
+	// x(t) = cos(2t)�(3+cos(3t))
+	// y(t) = sin(2t)�(3+cos(3t))
+	// z(t) = sin(3t)
+	return new THREE.Vector3(
+			20.0 * Math.cos(2.0 * t) * (3.0 + Math.cos(3.0 * t)),
+			20.0 * Math.sin(2.0 * t) * (3.0 + Math.cos(3.0 * t)),
+			50.0 * Math.sin(3.0 * t) );
+}
+
+var i = 0;
+
+function update()
+{
+
+	//cone.vertices = vertices; 		
+	i = i + 1;
+
+	if( i < vertices.length-5){
+		console.log(vertices[i]);
+				//console.log("X:"+vertices[i].x,"Y:"+vertices[i].y,"Z:"+vertices[i].z);
+
+		cone.position.set(vertices[i].x, vertices[i].y,vertices[i].z);
+		//cone.position = vertices[i];
+
+	}
+
+}
+
+function render() 
+{
+	renderer.render( scene, camera );
+}
+
+
+		</script>
+	</body>
+</html>
